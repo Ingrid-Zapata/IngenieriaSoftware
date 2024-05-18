@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Ingresos y Egresos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffdef8;
+            margin: 0;
+            padding: 0;
+        }
+        #inicio, #menuIngresos, #tablaApoyoOrganizaciones, #tablaDonaciones {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffd0f5;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #000000;
+        }
+        button {
+            background-color: #ff55d2;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #ff45ec;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #ff59e3;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de inicio -->
+    <div id="inicio">
+        <h1>Bienvenido al Registro de Ingresos y Egresos</h1>
+        <button onclick="mostrarIngreso()">Registrar un Ingreso</button>
+        <button onclick="mostrarEgreso()">Registrar un Egreso</button>
+    </div>
+
+    <!-- Menú de ingresos -->
+    <div id="menuIngresos" style="display:none;">
+        <h2>Seleccione el tipo de ingreso:</h2>
+        <button onclick="mostrarApoyoOrganizaciones()">Apoyo de Organizaciones</button>
+        <button onclick="mostrarDonaciones()">Donaciones</button>
+        <button onclick="mostrarDonativosPadrinos()">Donativos de Padrinos</button>
+        <button onclick="mostrarEventos()">Eventos</button>
+        <button onclick="mostrarRecaudacionFondos()">Recaudacion de Fondos</button>
+        <!-- Agrega botones para otros tipos de ingresos aquí -->
+    </div>
+
+    <!-- Menú de egresos -->
+    <div id="menuEgresos" style="display:none;">
+        <h2>Seleccione el tipo de egreso:</h2>
+        <button onclick="mostrarGastos()">Gastos</button>
+        <button onclick="mostrarProveedores()">Proveedores</button>
+        <!-- Puedes agregar botones para otros tipos de egresos aquí -->
+    </div>
+
+    <!-- Tabla de Gastos -->
+    <div id="tablaGastos" style="display:none;">
+        <h2>Gastos</h2>
+        <form id="formularioGastos">
+            <label for="idGasto">ID:</label>
+            <input type="text" id="idGasto" name="idGasto"><br><br>
+            <label for="fechaGasto">Fecha:</label>
+            <input type="date" id="fechaGasto" name="fechaGasto"><br><br>
+            <label for="concepto">Concepto:</label>
+            <input type="text" id="concepto" name="concepto"><br><br>
+            <label for="montoGasto">Monto:</label>
+            <input type="number" id="montoGasto" name="montoGasto"><br><br>
+            <button type="button" id="agregarGastoBtn" onclick="agregarFila('Gasto')">Agregar</button>
+            <button type="button" id="modificarGastoBtn" style="display:none;" onclick="modificarFila()">Modificar</button>
+        </form>
+        <table id="tablaGasto">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Concepto</th>
+                    <th>Monto</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí se mostrarán los datos dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Tabla de Proveedores -->
+    <div id="tablaProveedores" style="display:none;">
+        <h2>Proveedores</h2>
+        <form id="formularioProveedores">
+            <label for="idProveedor">ID:</label>
+            <input type="text" id="idProveedor" name="idProveedor"><br><br>
+            <label for="nombreProveedor">Nombre:</label>
+            <input type="text" id="nombreProveedor" name="nombreProveedor"><br><br>
+            <label for="contacto">Contacto:</label>
+            <input type="text" id="contacto" name="contacto"><br><br>
+            <label for="tipo">Tipo:</label>
+            <input type="text" id="tipo" name="tipo"><br><br>
+            <label for="montoProveedor">Monto:</label>
+            <input type="number" id="montoProveedor" name="montoProveedor"><br><br>
+            <label for="fechaProveedor">Fecha:</label>
+            <input type="date" id="fechaProveedor" name="fechaProveedor"><br><br>
+            <button type="button" id="agregarProveedorBtn" onclick="agregarFila('Proveedor')">Agregar</button>
+            <button type="button" id="modificarProveedorBtn" style="display:none;" onclick="modificarFila()">Modificar</button>
+        </form>
+        <table id="tablaProveedores">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Contacto</th>
+                    <th>Tipo</th>
+                    <th>Monto</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí se mostrarán los datos dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- Tabla de Apoyo de Organizaciones -->
+    <div id="tablaApoyoOrganizaciones" style="display:none;">
+        <h2>Apoyo de Organizaciones</h2>
+        <form id="formularioApoyo">
+            <label for="id">ID:</label>
+            <input type="text" id="id" name="id"><br><br>
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" name="fecha"><br><br>
+            <label for="organizacion">Organización:</label>
+            <input type="text" id="organizacion" name="organizacion"><br><br>
+            <label for="monto">Monto:</label>
+            <input type="number" id="monto" name="monto"><br><br>
+            <button type="button" id="agregarBtn" onclick="agregarFila('Apoyo')">Agregar</button>
+            <button type="button" id="modificarBtn" style="display:none;" onclick="modificarFila()">Modificar</button>
+        </form>
+        <table id="tablaApoyo">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Organización</th>
+                    <th>Monto</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí se mostrarán los datos dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Tabla de Donaciones -->
+    <div id="tablaDonaciones" style="display:none;">
+        <h2>Donaciones</h2>
+        <form id="formularioDonaciones">
+            <label for="id_donacion">ID Donación:</label>
+            <input type="text" id="id_donacion" name="id_donacion"><br><br>
+            <label for="fecha_donacion">Fecha:</label>
+            <input type="date" id="fecha_donacion" name="fecha_donacion"><br><br>
+            <label for="monto_donacion">Monto:</label>
+            <input type="number" id="monto_donacion" name="monto_donacion"><br><br>
+            <label for="origen">Origen:</label>
+            <input type="text" id="origen" name="origen"><br><br>
+            <label for="destino">Destino:</label>
+            <input type="text" id="destino" name="destino"><br><br>
+            <button type="button" id="agregarBtnDonacion" onclick="agregarFila('Donacion')">Agregar</button>
+            <button type="button" id="modificarBtnDonacion" style="display:none;" onclick="modificarFilaDonacion()">Modificar</button>
+        </form>
+        <table id="tablaDonacion">
+            <thead>
+                <tr>
+                    <th>ID Donación</th>
+                    <th>Fecha</th>
+                    <th>Monto</th>
+                    <th>Origen</th>
+                    <th>Destino</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí se mostrarán los datos dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+        <!-- Tabla de Donativos de Padrinos -->
+    <div id="tablaDonativosPadrinos" style="display:none;">
+        <h2>Donativos de Padrinos</h2>
+        <form id="formularioDonativosPadrinos">
+            <label for="id_donativopadrino">ID Donativo de Padrino:</label>
+            <input type="text" id="id_donativopadrino" name="id_donativopadrino"><br><br>
+            <label for="fecha_donativopadrino">Fecha:</label>
+            <input type="date" id="fecha_donativopadrino" name="fecha_donativopadrino"><br><br>
+            <label for="tipo">Tipo:</label>
+            <input type="text" id="tipo" name="tipo"><br><br>
+            <label for="monto_donativopadrino">Monto:</label>
+            <input type="number" id="monto_donativopafrino" name="monto_donativopadrino"><br><br>
+            <button type="button" id="agregarBtn" onclick="agregarFila('DonativosPadrinos')">Agregar</button>
+            <button type="button" id="modificarBtn" style="display:none;" onclick="modificarFila()">Modificar</button>
+        </form>
+        <table id="tablaDonativosPadrinos">
+            <thead>
+                <tr>
+                    <th>ID Donativo de Padrino</th>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>Monto</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí se mostrarán los datos dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+        <!-- Tabla de Eventos -->
+    <div id="tablaEventos" style="display:none;">
+        <h2>Eventos</h2>
+        <form id="formularioEventos">
+            <label for="id_evento">ID del Evento:</label>
+            <input type="text" id="id_evento" name="id_evento"><br><br>
+            <label for="fecha_evento">Fecha:</label>
+            <input type="date" id="fecha_evento" name="fecha_evento"><br><br>
+            <label for="descripcion_evento">Descripción:</label>
+            <input type="text" id="descripcion_evento" name="descripcion_evento"><br><br>
+            <label for="monto_evento">Monto:</label>
+            <input type="number" id="monto_evento" name="monto_evento"><br><br>
+            <button type="button" id="agregarEventoBtn" onclick="agregarFila('Evento')">Agregar</button>
+            <button type="button" id="modificarEventoBtn" style="display:none;" onclick="modificarFilaEvento()">Modificar</button>
+        </form>
+        <table id="tablaEventos">
+            <thead>
+                <tr>
+                    <th>ID del Evento</th>
+                    <th>Fecha</th>
+                    <th>Descripción</th>
+                    <th>Monto</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí se mostrarán los datos dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+    <!-- Tabla de Recaudacion de Fondos -->
+    <div id="tablaRecaudacionFondos" style="display:none;">
+        <h2>Recaudación de Fondos</h2>
+        <form id="formularioRecaudacion">
+            <label for="id_recaudacion">ID:</label>
+            <input type="text" id="id_recaudacion" name="id_recaudacion"><br><br>
+            <label for="fecha_recaudacion">Fecha:</label>
+            <input type="date" id="fecha_recaudacion" name="fecha_recaudacion"><br><br>
+            <label for="tipo">Tipo:</label>
+            <input type="text" id="tipo" name="tipo"><br><br>
+            <label for="monto_recaudacion">Monto:</label>
+            <input type="number" id="monto_recaudacion" name="monto_recaudacion"><br><br>
+            <button type="button" id="agregarBtnRecaudacion" onclick="agregarFila('Recaudacion')">Agregar</button>
+            <button type="button" id="modificarBtnRecaudacion" style="display:none;" onclick="modificarFilaRecaudacion()">Modificar</button>
+        </form>
+        <table id="tablaRecaudacion">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>Monto</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí se mostrarán los datos dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        var filaModificarApoyo = null;
+        var filaModificarDonacion = null;
+        var filaModificarDonativoPadrino =null;
+        var filaModificarEvento = null;
+        var filaModificarRecaudacion = null;
+        var fileModificarGastos = null;
+        var fileModificarProveedores = null;
+
+
+        function mostrarIngreso() {
+            document.getElementById('inicio').style.display = 'none';
+            document.getElementById('menuIngresos').style.display = 'block';
+        }
+        function mostrarEgreso() {
+            document.getElementById('inicio').style.display = 'none';
+            document.getElementById('menuEgresos').style.display = 'block';
+        }
+        function mostrarApoyoOrganizaciones() {
+            document.getElementById('menuIngresos').style.display = 'none';
+            document.getElementById('tablaApoyoOrganizaciones').style.display = 'block';
+        }
+
+        function mostrarDonaciones() {
+            document.getElementById('menuIngresos').style.display = 'none';
+            document.getElementById('tablaDonaciones').style.display = 'block';
+        }
+
+        function mostrarDonativosPadrinos(){
+            document.getElementById('menuIngresos').style.display ='none'; // Ocultar el menú de ingresos
+            document.getElementById('tablaDonativosPadrinos').style.display = 'block'; // Mostrar la tabla de donativos de padrinos
+        }
+
+        function mostrarEventos(){
+            document.getElementById('menuIngresos').style.display ='none'; // Ocultar el menú de ingresos
+            document.getElementById('tablaEventos').style.display = 'block'; // Mostrar la tabla de donativos de padrinos
+        }
+        function mostrarRecaudacionFondos() {
+            document.getElementById('menuIngresos').style.display = 'none';
+            document.getElementById('tablaRecaudacionFondos').style.display = 'block';
+        }
+        function mostrarGastos(){
+            document.getElementById('menuEgresos').style.display = 'none';
+            document.getElementById('tablaGastos').style.display = 'block';
+        }
+        function mostrarProveedores(){
+            document.getElementById('menuEgresos').style.display = 'none';
+            document.getElementById('tablaProveedores').style.display = 'block';
+        }
+
+        function agregarFila(tipo) {
+            var id, fecha, monto, tipoDonativo, tableRef;
+            var id, fecha, descripcion, monto, tableRef;
+            var id, fecha, nombre, contacto,tipoProveedor,monto, tableRef;
+            if (tipo === 'Apoyo') {
+                id = document.getElementById("id").value;
+                fecha = document.getElementById("fecha").value;
+                organizacion = document.getElementById("organizacion").value;
+                monto = document.getElementById("monto").value;
+                tableRef = document.getElementById("tablaApoyo").getElementsByTagName('tbody')[0];
+            } else if (tipo === 'Donacion') {
+                id = document.getElementById("id_donacion").value;
+                fecha = document.getElementById("fecha_donacion").value;
+                monto = document.getElementById("monto_donacion").value;
+                origen = document.getElementById("origen").value;
+                destino = document.getElementById("destino").value;
+                tableRef = document.getElementById("tablaDonacion").getElementsByTagName('tbody')[0];
+            } else if (tipo === 'DonativosPadrinos') {
+                id = document.getElementById("id_donativopadrino").value;
+                fecha = document.getElementById("fecha").value;
+                tipoDonativo = document.getElementById("tipo").value;
+                monto = document.getElementById("monto").value;
+                tableRef = document.getElementById("tablaDonativosPadrinos").getElementsByTagName('tbody')[0];
+            } else if (tipo === 'Evento') {
+                id = document.getElementById("id_evento").value;
+                fecha = document.getElementById("fecha_evento").value;
+                descripcion = document.getElementById("descripcion_evento").value;
+                monto = document.getElementById("monto_evento").value;
+                tableRef = document.getElementById("tablaEventos").getElementsByTagName('tbody')[0];
+            }else if (tipo === 'Recaudacion') {
+                id = document.getElementById("id_recaudacion").value;
+                fecha = document.getElementById("fecha_recaudacion").value;
+                tipo = document.getElementById("tipo").value;
+                monto = document.getElementById("monto_recaudacion").value;
+                tableRef = document.getElementById("tablaRecaudacion").getElementsByTagName('tbody')[0];
+            }else if (tipo === 'Gasto') {
+                id = document.getElementById("idGasto").value;
+                fecha = document.getElementById("fechaGasto").value;
+                concepto = document.getElementById("concepto").value;
+                monto = document.getElementById("montoGasto").value;
+                tableRef = document.getElementById("tablaGasto").getElementsByTagName('tbody')[0];
+            } else if (tipo === 'Proveedor') {
+                id = document.getElementById("idProveedor").value;
+                fecha = document.getElementById("fechaProveedor").value;
+                nombre = document.getElementById("nombreProveedor").value;
+                contacto = document.getElementById("contacto").value;
+                tipoProveedor = document.getElementById("tipo").value;
+                monto = document.getElementById("montoProveedor").value;
+                tableRef = document.getElementById("tablaProveedores").getElementsByTagName('tbody')[0];
+            }
+
+
+
+            var newRow = tableRef.insertRow();
+
+            var cell1 = newRow.insertCell(0);
+            var cell2 = newRow.insertCell(1);
+            var cell3 = newRow.insertCell(2);
+            var cell4 = newRow.insertCell(3);
+            var cell5 = newRow.insertCell(4);
+
+            if (tipo === 'Apoyo') {
+                cell1.innerHTML = id;
+                cell2.innerHTML = fecha;
+                cell3.innerHTML = organizacion;
+                cell4.innerHTML = monto;
+                cell5.innerHTML = '<button onclick="eliminarFila(this)">Eliminar</button> <button onclick="modificarFilaApoyo(this)">Modificar</button>';
+            } else if (tipo === 'Donacion') {
+                cell1.innerHTML = id;
+                cell2.innerHTML = fecha;
+                cell3.innerHTML = monto;
+                cell4.innerHTML = origen;
+                cell5.innerHTML = destino;
+                cell6.innerHTML = '<button onclick="eliminarFila(this)">Eliminar</button> <button onclick="modificarFilaDonacion(this)">Modificar</button>';
+            } else if (tipo === 'DonativosPadrinos') {
+                cell1.innerHTML = id;
+                cell2.innerHTML = fecha;
+                cell3.innerHTML = tipoDonativo;
+                cell4.innerHTML = monto;
+                cell5.innerHTML = '<button onclick="eliminarFila(this)">Eliminar</button> <button onclick="modificarFilaDonativosPadrinos(this)">Modificar</button>';
+            }else if (tipo === 'Evento') {
+                cell1.innerHTML = id;
+                cell2.innerHTML = fecha;
+                cell3.innerHTML = descripcion;
+                cell4.innerHTML = monto;
+                cell5.innerHTML = '<button onclick="eliminarFila(this)">Eliminar</button> <button onclick="modificarFilaEvento(this)">Modificar</button>';
+            } else if (tipo === 'Recaudacion') {
+                cell1.innerHTML = id;
+                cell2.innerHTML = fecha;
+                cell3.innerHTML = tipo;
+                cell4.innerHTML = monto;
+                cell5.innerHTML = '<button onclick="eliminarFila(this)">Eliminar</button> <button onclick="modificarFilaRecaudacion(this)">Modificar</button>';
+            }else if (tipo === 'Gasto') {
+                cell1.innerHTML = id;
+                cell2.innerHTML = fecha;
+                cell3.innerHTML = concepto;
+                cell4.innerHTML = monto;
+                cell5.innerHTML = '<button onclick="eliminarFila(this)">Eliminar</button> <button onclick="modificarFilaGasto(this)">Modificar</button>';
+            }else if (tipo === 'Proveedor') {
+                cell1.innerHTML = id;
+                cell2.innerHTML = fecha;
+                cell3.innerHTML = nombre;
+                cell4.innerHTML = contacto;
+                cell5.innerHTML = tipoProveedor;
+                cell6.innerHTML = monto;
+                cell7.innerHTML = '<button onclick="eliminarFila(this)">Eliminar</button> <button onclick="modificarFilaProveedor(this)">Modificar</button>';
+            }
+
+
+            limpiarFormulario(tipo);
+        }
+
+        function limpiarFormulario(tipo) {
+            if (tipo === 'Apoyo') {
+                document.getElementById("id").value = "";
+                document.getElementById("fecha").value = "";
+                document.getElementById("organizacion").value = "";
+                document.getElementById("monto").value = "";
+            } else if (tipo === 'Donacion') {
+                document.getElementById("id_donacion").value = "";
+                document.getElementById("fecha_donacion").value = "";
+                document.getElementById("monto_donacion").value = "";
+                document.getElementById("origen").value = "";
+                document.getElementById("destino").value = "";
+            } else if (tipo === 'DonativosPadrinos') {
+                document.getElementById("id_donativopadrino").value = "";
+                document.getElementById("fecha").value = "";
+                document.getElementById("tipo").value = "";
+                document.getElementById("monto").value = "";
+            }else if (tipo === 'Evento') {
+                document.getElementById("id_evento").value = "";
+                document.getElementById("fecha_evento").value = "";
+                document.getElementById("descripcion_evento").value = "";
+                document.getElementById("monto_evento").value = "";
+            }else if (tipo === 'Recaudacion') {
+                document.getElementById("id_recaudacion").value = "";
+                document.getElementById("fecha_recaudacion").value = "";
+                document.getElementById("tipo").value = "";
+                document.getElementById("monto_recaudacion").value = "";
+            }else if (tipo === 'Gasto') {
+                document.getElementById("idGasto").value = "";
+                document.getElementById("fechaGasto").value = "";
+                document.getElementById("concepto").value = "";
+                document.getElementById("montoGasto").value = "";
+            }else if (tipo === 'Proveedor') {
+                document.getElementById("idProveedor").value = "";
+                document.getElementById("fechaProveedor").value = "";
+                document.getElementById("nombreProveedor").value = "";
+                document.getElementById("contacto").value = "";
+                document.getElementById("tipo").value = "";
+                document.getElementById("montoProveedor").value = "";
+            }
+
+
+        }
+
+
+        function eliminarFila(button) {
+            var row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        function modificarFilaApoyo(button) {
+            filaModificarApoyo = button.parentNode.parentNode;
+            document.getElementById("id").value = filaModificarApoyo.cells[0].innerHTML;
+            document.getElementById("fecha").value = filaModificarApoyo.cells[1].innerHTML;
+            document.getElementById("organizacion").value = filaModificarApoyo.cells[2].innerHTML;
+            document.getElementById("monto").value = filaModificarApoyo.cells[3].innerHTML;
+            document.getElementById("agregarBtn").style.display = "none";
+            document.getElementById("modificarBtn").style.display = "block";
+        }
+
+        function modificarFilaDonacion(button) {
+            filaModificarDonacion = button.parentNode.parentNode;
+            document.getElementById("id_donacion").value = filaModificarDonacion.cells[0].innerHTML;
+            document.getElementById("fecha_donacion").value = filaModificarDonacion.cells[1].innerHTML;
+            document.getElementById("monto_donacion").value = filaModificarDonacion.cells[2].innerHTML;
+            document.getElementById("origen").value = filaModificarDonacion.cells[3].innerHTML;
+            document.getElementById("destino").value = filaModificarDonacion.cells[4].innerHTML;
+            document.getElementById("agregarBtnDonacion").style.display = "none";
+            document.getElementById("modificarBtnDonacion").style.display = "block";
+        }
+
+        function modificarFilaDonativosPadrinos(button) {
+            filaModificarDonativoPadrino = button.parentNode.parentNode;
+            document.getElementById("id_donativopadrino").value = filaModificarDonativoPadrino.cells[0].innerHTML;
+            document.getElementById("fecha").value = filaModificarDonativoPadrino.cells[1].innerHTML;
+            document.getElementById("tipo").value = filaModificarDonativoPadrino.cells[2].innerHTML;
+            document.getElementById("monto").value = filaModificarDonativoPadrino.cells[3].innerHTML;
+            document.getElementById("agregarBtnDonativoPadrino").style.display = "none";
+            document.getElementById("modificarBtnDonativoPadrino").style.display = "block";
+        }
+
+        function modificarFilaEvento(button) {
+            filaModificarEvento = button.parentNode.parentNode;
+            document.getElementById("id_evento").value = filaModificarEvento.cells[0].innerHTML;
+            document.getElementById("fecha_evento").value = filaModificarEvento.cells[1].innerHTML;
+            document.getElementById("descripcion_evento").value = filaModificarEvento.cells[2].innerHTML;
+            document.getElementById("monto_evento").value = filaModificarEvento.cells[3].innerHTML;
+            document.getElementById("agregarEventoBtn").style.display = "none";
+            document.getElementById("modificarEventoBtn").style.display = "block";
+        }
+
+        function modificarFilaRecaudacion(button) {
+            filaModificarRecaudacion = button.parentNode.parentNode;
+            document.getElementById("id_recaudacion").value = filaModificarRecaudacion.cells[0].innerHTML;
+            document.getElementById("fecha_recaudacion").value = filaModificarRecaudacion.cells[1].innerHTML;
+            document.getElementById("tipo").value = filaModificarRecaudacion.cells[2].innerHTML;
+            document.getElementById("monto_recaudacion").value = filaModificarRecaudacion.cells[3].innerHTML;
+            document.getElementById("agregarBtnRecaudacion").style.display = "none";
+            document.getElementById("modificarBtnRecaudacion").style.display = "block";
+        }
+
+        function modificarFilaGasto(button) {
+            filaModificarGasto = button.parentNode.parentNode;
+            document.getElementById("idGasto").value = filaModificarGasto.cells[0].innerHTML;
+            document.getElementById("fechaGasto").value = filaModificarGasto.cells[1].innerHTML;
+            document.getElementById("concepto").value = filaModificarGasto.cells[2].innerHTML;
+            document.getElementById("montoGasto").value = filaModificarGasto.cells[3].innerHTML;
+            document.getElementById("agregarGastoBtn").style.display = "none";
+            document.getElementById("modificarGastoBtn").style.display = "block";
+        }
+
+        function modificarFilaProveedor(button) {
+            filaModificarProveedor = button.parentNode.parentNode;
+            document.getElementById("idProveedor").value = filaModificarProveedor.cells[0].innerHTML;
+            document.getElementById("fechaProveedor").value = filaModificarProveedor.cells[1].innerHTML;
+            document.getElementById("nombreProveedor").value = filaModificarProveedor.cells[2].innerHTML;
+            document.getElementById("contacto").value = filaModificarProveedor.cells[3].innerHTML;
+            document.getElementById("tipo").value = filaModificarProveedor.cells[4].innerHTML;
+            document.getElementById("montoProveedor").value = filaModificarProveedor.cells[5].innerHTML;
+            document.getElementById("agregarProveedorBtn").style.display = "none";
+            document.getElementById("modificarProveedorBtn").style.display = "block";
+        }
+    </script>
+</body>
+</html>
